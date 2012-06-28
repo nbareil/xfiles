@@ -1,4 +1,3 @@
-
 xfiles
 ======
 
@@ -20,9 +19,9 @@ expiration
 
 If want to remove files after a delay, you have to add a crontask yourself :
 
-   $ crontab -l
-   # m h  dom mon dow   command
-   3   2    *   *   *   sh -c "find -ctime +4 -print0 |xargs -0 rm"
+    $ crontab -l
+    # m h  dom mon dow   command
+    3   2    *   *   *   sh -c "find -ctime +4 -print0 |xargs -0 rm"
 
 requirements
 ============
