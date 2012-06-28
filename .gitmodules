@@ -1,0 +1,6 @@
+[submodule "webpy"]
+	path = webpy
+	url = git://github.com/webpy/webpy.git
+[submodule "file-uploader"]
+	path = file-uploader
+	url = https://github.com/valums/file-uploader.git
