@@ -111,9 +111,7 @@ class DownloadView:
 
 if __name__ == '__main__':
     parser = OptionParser(usage=u'usage: %prog [options]')
-    parser.add_option('-o', '--output', dest='output', metavar="FILE",
-                      help=u"Write output in file")
-    parser.add_option('-s', '--store-dir', dest='store', metavar="DIR",
+    parser.add_option('-o', '--store-dir', dest='store', metavar="DIR",
                       help=u"Write files in directory", default="space")
     parser.add_option('-v', '--verbose', dest='verbose', action="store_true",
                       default=False, help=u"Verbose mode")
@@ -122,20 +120,21 @@ if __name__ == '__main__':
 
     (options,args) = parser.parse_args()
 
-    if options.output:
-        output = open(options.output, 'w')
-    else:
-        output = sys.stdout
-
     loglvl = logging.INFO if options.verbose else logging.WARNING
     loglvl = logging.DEBUG if options.debug else loglvl
     logging.basicConfig(level=loglvl,
                         format="%(asctime)s %(name)8s %(levelname)5s: %(message)s")
     log = logging.getLogger(sys.argv[0])
 
+    try:
+        os.makedirs(options.store)
+    except OSError, e:
+        if e.errno != os.errno.EEXIST:
+            log.error("Cannot create directory: %s" % e)
+            sys.exit(1)
+
     log.info('Writing files in %s' % options.store)
     tempfile.tempdir = options.store
-
+    sys.argv = []
     app = web.application(urls, globals())
     app.run()
-
