@@ -58,7 +58,7 @@ class UploadView:
     def POST(self):
         user_filename = web.ctx.env.get('HTTP_X_FILE_NAME')
         load = web.data()
-        key = pwgen()
+        key = pwgen(size=32)
         internal_filename = pwgen()
         try:
             gpg = gnupg.GPG()
