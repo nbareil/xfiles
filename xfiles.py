@@ -65,7 +65,7 @@ class UploadView:
             meta = os.path.join(self.dir, internal_filename + '.meta')
             gpg.encrypt(user_filename, [], armor=False, symmetric=True,
                         output=meta, passphrase=key)
-            
+
             safe_path = os.path.join(self.dir, internal_filename)
             gpg.encrypt(load, [], symmetric=True,
                         passphrase=key, output=safe_path,
@@ -96,7 +96,10 @@ class DownloadView:
             # log.error('Invalid hash %r' % hash)
             raise web.notfound()
         safe_path = os.path.join(self.dir, hash)
-        encrypted_filename = open(safe_path + '.meta').read()
+        try:
+            encrypted_filename = open(safe_path + '.meta').read()
+        except IOError:
+            raise web.notfound()
         gpgret = gpg.decrypt(encrypted_filename, passphrase=key)
         if not gpgret.ok:
             raise web.notfound()
