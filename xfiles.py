@@ -126,6 +126,8 @@ if __name__ == '__main__':
                         format="%(asctime)s %(name)8s %(levelname)5s: %(message)s")
     log = logging.getLogger(sys.argv[0])
 
+    web.config.debug = options.debug
+
     try:
         os.makedirs(options.store)
     except OSError, e:
