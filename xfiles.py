@@ -42,7 +42,7 @@ def pwgen(size=16, chars=string.ascii_letters + string.digits):
 class PersistantFieldStorage(cgi.FieldStorage):
     def make_file(self, binary=None):
         return tempfile.NamedTemporaryFile()
-cgi.FieldStorage = PersistantFieldStorage    
+cgi.FieldStorage = PersistantFieldStorage
 
 
 class RedirectView:
@@ -64,7 +64,6 @@ class UploadView:
             meta = os.path.join(options.store, internal_filename + '.meta')
             gpg.encrypt(user_filename, [], armor=False, symmetric=True,
                         output=meta, passphrase=key)
-            
             safe_path = os.path.join(options.store, internal_filename)
             gpg.encrypt(load, [], symmetric=True,
                         passphrase=key, output=safe_path,
@@ -94,7 +93,10 @@ class DownloadView:
             # log.error('Invalid hash %r' % hash)
             raise web.notfound()
         safe_path = os.path.join(options.store, hash)
-        encrypted_filename = open(safe_path + '.meta').read()
+        try:
+            encrypted_filename = open(safe_path + '.meta').read()
+        except IOError:
+            raise web.notfound()
         gpgret = gpg.decrypt(encrypted_filename, passphrase=key)
         if not gpgret.ok:
             raise web.notfound()
@@ -123,6 +125,8 @@ if __name__ == '__main__':
     logging.basicConfig(level=loglvl,
                         format="%(asctime)s %(name)8s %(levelname)5s: %(message)s")
     log = logging.getLogger(sys.argv[0])
+
+    web.config.debug = options.debug
 
     try:
         os.makedirs(options.store)
