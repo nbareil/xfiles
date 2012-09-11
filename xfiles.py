@@ -51,7 +51,6 @@ class RedirectView:
 
 
 class UploadView:
-    dir = "space"
     def GET(self):
         render = web.template.render('templates')
         return render.upload()
@@ -62,11 +61,11 @@ class UploadView:
         internal_filename = pwgen()
         try:
             gpg = gnupg.GPG()
-            meta = os.path.join(self.dir, internal_filename + '.meta')
+            meta = os.path.join(options.store, internal_filename + '.meta')
             gpg.encrypt(user_filename, [], armor=False, symmetric=True,
                         output=meta, passphrase=key)
             
-            safe_path = os.path.join(self.dir, internal_filename)
+            safe_path = os.path.join(options.store, internal_filename)
             gpg.encrypt(load, [], symmetric=True,
                         passphrase=key, output=safe_path,
                         armor=False)
@@ -82,7 +81,6 @@ class UploadView:
 
 
 class DownloadView:
-    dir = "space"
     def GET(self, hash):
         render = web.template.render('templates')
         return render.download()
@@ -95,7 +93,7 @@ class DownloadView:
         if not match:
             # log.error('Invalid hash %r' % hash)
             raise web.notfound()
-        safe_path = os.path.join(self.dir, hash)
+        safe_path = os.path.join(options.store, hash)
         encrypted_filename = open(safe_path + '.meta').read()
         gpgret = gpg.decrypt(encrypted_filename, passphrase=key)
         if not gpgret.ok:
